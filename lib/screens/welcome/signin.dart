@@ -25,7 +25,7 @@ class _SignInFormState extends State<SignInForm> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             //into text
-            const StyledBodyText("Sign in to your account."),
+            Center(child: const StyledBodyText("Sign in to your account.")),
 
             const SizedBox(
               height: 16,
@@ -38,6 +38,12 @@ class _SignInFormState extends State<SignInForm> {
               decoration: const InputDecoration(
                 label: Text("Email"),
               ),
+              validator: (value){
+                if(value == null || value.isEmpty){
+                  return "Email is required";
+                }
+                return null;
+              },
             ),
             const SizedBox(
               height: 16,
@@ -50,6 +56,12 @@ class _SignInFormState extends State<SignInForm> {
               decoration: const InputDecoration(
                 label: Text("Password"),
               ),
+              validator: (value){
+                if(value == null || value.isEmpty){
+                  return "Password is required";
+                }
+                return null;
+              },
             ),
 
             const SizedBox(
@@ -60,7 +72,12 @@ class _SignInFormState extends State<SignInForm> {
 
             //submit button
             StyledButton(
-              onPressed: () async {},
+              onPressed: () async {
+                if(_formKey.currentState!.validate()){
+                  var email = emailControler.text.trim();
+                  var password = passwordControler.text.trim();
+                }
+              },
               child: const StyledButtonText("Sign In"),
             )
           ],

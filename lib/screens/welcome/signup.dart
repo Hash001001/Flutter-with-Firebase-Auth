@@ -25,7 +25,8 @@ class _SignUpFormState extends State<SignUpForm> {
           crossAxisAlignment:  CrossAxisAlignment.stretch,
           children: [
             //into text
-            const StyledBodyText("Signup for a new account to get started."),
+            Center(
+                child: const StyledBodyText("Signup for a new account to get started.")),
 
         const SizedBox(height: 16,),
 
@@ -35,8 +36,13 @@ class _SignUpFormState extends State<SignUpForm> {
               keyboardType:  TextInputType.emailAddress,
               decoration: const InputDecoration(
                 label: Text("Email"),
-                
               ),
+              validator: (value){
+                if(value == null || value.isEmpty){
+                  return "Email is required";
+                }
+                return null;
+              },
             ),
         const SizedBox(height: 16,),
             
@@ -47,7 +53,16 @@ class _SignUpFormState extends State<SignUpForm> {
               decoration: const InputDecoration(
                 label: Text("Password"),
               ),
+              validator: (value){
+                if(value == null || value.isEmpty){
+                  return "Password is required";
+                }
 
+                if(value.length < 8){
+                  return "Password must be at least 8 characters";
+                }
+                return null;
+              },
             ),
             const SizedBox(height: 16,),
             
@@ -56,7 +71,10 @@ class _SignUpFormState extends State<SignUpForm> {
             //submit button
             StyledButton(
               onPressed: () async{
-                
+                if(_formKey.currentState!.validate()){
+                  var email = emailControler.text.trim();
+                  var password = passwordControler.text.trim();
+                }
               },
               child: const StyledButtonText("Sign Up "),
             )
