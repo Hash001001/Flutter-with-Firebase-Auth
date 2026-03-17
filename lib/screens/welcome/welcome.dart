@@ -1,3 +1,4 @@
+import 'package:flutter_auth_tut/screens/welcome/signup.dart';
 import 'package:flutter_auth_tut/shared/styled_text.dart';
 import 'package:flutter/material.dart';
 
@@ -27,7 +28,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
               StyledHeading('Welcome.'),
         
               // sign up screen
-
+              SignUpForm()
 
               // sign in screen
             ]
