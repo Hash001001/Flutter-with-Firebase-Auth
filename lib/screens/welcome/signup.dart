@@ -16,24 +16,26 @@ class _SignUpFormState extends State<SignUpForm> {
   final _formKey = GlobalKey<FormState>();
   final emailControler = TextEditingController();
   final passwordControler = TextEditingController();
+  String? _errorMessage;
+  bool _isLoading = false;
 
   @override
   Widget build(BuildContext context) {
-    return Padding(padding: EdgeInsetsGeometry.all(16),
+    return Padding(padding: const EdgeInsets.all(16),
       child: Form(
         key: _formKey,
         child: Column(
           crossAxisAlignment:  CrossAxisAlignment.stretch,
           children: [
             //into text
-            Center(
-                child: const StyledBodyText("Signup for a new account to get started.")),
+            const Center(
+                child: StyledBodyText("Signup for a new account to get started.")),
 
         const SizedBox(height: 16,),
 
             //email field
             TextFormField(
-              controller: emailControler,
+              controller:  emailControler,
               keyboardType:  TextInputType.emailAddress,
               decoration: const InputDecoration(
                 label: Text("Email"),
@@ -68,21 +70,53 @@ class _SignUpFormState extends State<SignUpForm> {
             const SizedBox(height: 16,),
             
             //feedback text
+            if (_errorMessage != null)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 16),
+                child: StyledErrorText(_errorMessage!),
+              ),
 
             //submit button
             StyledButton(
-              onPressed: () async{
+              onPressed: _isLoading ? () {} : () async{
                 if(_formKey.currentState!.validate()){
-                  var email = emailControler.text.trim();
-                  var password = passwordControler.text.trim();
+                  setState(() {
+                    _isLoading = true;
+                    _errorMessage = null;
+                  });
 
-                  final user = await AuthService.signUp(email, password);
+                  try {
+                    final email = emailControler.text.trim();
+                    final password = passwordControler.text.trim();
 
-                  print("User value ->  ${user!.email}");
+                    final user = await AuthService.signUp(email, password);
 
+                    if (user != null) {
+                      print("User value ->  ${user.email}");
+                      // Navigate to next screen or show success
+                    } else {
+                      setState(() {
+                        _errorMessage = "Sign up failed. Please try again.";
+                      });
+                    }
+                  } catch (e) {
+                    setState(() {
+                      _errorMessage = e.toString();
+                    });
+                  } finally {
+                    setState(() {
+                      _isLoading = false;
+                    });
+                  }
                 }
               },
-              child: const StyledButtonText("Sign Up "),
+              child: _isLoading
+                ? const SizedBox(
+                    height: 20,
+                    width: 20,
+                    child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                  )
+                : const StyledButtonText("Sign Up "),
             )
           ],
         ),

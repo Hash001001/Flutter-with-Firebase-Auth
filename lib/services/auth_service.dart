@@ -5,18 +5,22 @@ class AuthService {
   static final _firebaseAuth = FirebaseAuth.instance;
 
   static Future<AppUser?> signUp(String email, String password) async {
-    try{
+    try {
+      UserCredential userCredential = await _firebaseAuth
+          .createUserWithEmailAndPassword(email: email, password: password);
 
-      UserCredential _userCredential = await _firebaseAuth.createUserWithEmailAndPassword(email: email, password: password);
-
-      if(_userCredential != null){
-        return AppUser(uid: _userCredential.user!.uid, email: _userCredential.user!.email!);
+      if (userCredential.user != null) {
+        return AppUser(
+            uid: userCredential.user!.uid, email: userCredential.user!.email!);
       }
 
       return null;
-
-    }catch(e){
-      return null;
+    } on FirebaseAuthException catch (e) {
+      print('FirebaseAuthException: ${e.code} - ${e.message}');
+      rethrow;
+    } catch (e) {
+      print('SignUp Error: $e');
+      rethrow;
     }
 
   }
