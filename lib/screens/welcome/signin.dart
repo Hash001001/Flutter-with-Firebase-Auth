@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_auth_tut/screens/profile/profile.dart';
+import 'package:flutter_auth_tut/services/auth_service.dart';
 
 import '../../shared/styled_button.dart';
 import '../../shared/styled_text.dart';
@@ -14,6 +16,9 @@ class _SignInFormState extends State<SignInForm> {
   final _formKey = GlobalKey<FormState>();
   final emailControler = TextEditingController();
   final passwordControler = TextEditingController();
+
+  String? _errorMessage;
+  bool _isLoading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -38,8 +43,8 @@ class _SignInFormState extends State<SignInForm> {
               decoration: const InputDecoration(
                 label: Text("Email"),
               ),
-              validator: (value){
-                if(value == null || value.isEmpty){
+              validator: (value) {
+                if (value == null || value.isEmpty) {
                   return "Email is required";
                 }
                 return null;
@@ -56,8 +61,8 @@ class _SignInFormState extends State<SignInForm> {
               decoration: const InputDecoration(
                 label: Text("Password"),
               ),
-              validator: (value){
-                if(value == null || value.isEmpty){
+              validator: (value) {
+                if (value == null || value.isEmpty) {
                   return "Password is required";
                 }
                 return null;
@@ -70,15 +75,61 @@ class _SignInFormState extends State<SignInForm> {
 
             //feedback text
 
+            if (_errorMessage != null)
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: StyledErrorText(_errorMessage.toString()),
+              ),
+
             //submit button
             StyledButton(
-              onPressed: () async {
-                if(_formKey.currentState!.validate()){
-                  var email = emailControler.text.trim();
-                  var password = passwordControler.text.trim();
-                }
-              },
-              child: const StyledButtonText("Sign In"),
+              onPressed: _isLoading
+                  ? () {}
+                  : () async {
+                      if (_formKey.currentState!.validate()) {
+                        setState(() {
+                          _isLoading = true;
+                          _errorMessage = null;
+                        });
+                        try {
+                          var email = emailControler.text.trim();
+                          var password = passwordControler.text.trim();
+
+                          final user =
+                              await AuthService.signIn(email, password);
+
+                          if (user != null) {
+                            print("Sign in User value ->  ${user.email}");
+
+                            Navigator.push(context,
+                                MaterialPageRoute(builder: (context) {
+                              return ProfileScreen();
+                            }));
+                          } else {
+                            setState(() {
+                              _errorMessage =
+                                  "An error occurred while signing in";
+                            });
+                          }
+                        } catch (e) {
+                          setState(() {
+                            _errorMessage = e.toString();
+                          });
+                        } finally {
+                          setState(() {
+                            _isLoading = false;
+                          });
+                        }
+                      }
+                    },
+              child: _isLoading
+                  ? const SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(
+                          color: Colors.white, strokeWidth: 2),
+                    )
+                  : const StyledButtonText("Sign In"),
             )
           ],
         ),
