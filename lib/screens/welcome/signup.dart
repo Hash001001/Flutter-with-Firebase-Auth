@@ -107,10 +107,6 @@ class _SignUpFormState extends State<SignUpForm> {
                             print("User value ->  ${user.email}");
                             // Navigate to next screen or show success
 
-                            Navigator.push(context,
-                                MaterialPageRoute(builder: (context) {
-                              return ProfileScreen();
-                            }));
                           } else {
                             setState(() {
                               _errorMessage =

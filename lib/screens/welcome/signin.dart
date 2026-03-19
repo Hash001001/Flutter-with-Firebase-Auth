@@ -101,10 +101,6 @@ class _SignInFormState extends State<SignInForm> {
                           if (user != null) {
                             print("Sign in User value ->  ${user.email}");
 
-                            Navigator.push(context,
-                                MaterialPageRoute(builder: (context) {
-                              return ProfileScreen();
-                            }));
                           } else {
                             setState(() {
                               _errorMessage =
